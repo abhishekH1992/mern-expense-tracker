@@ -2,7 +2,7 @@ import { users } from './../../seeder/data.js'
 
 const userResolver = {
     Query: {
-        users: () => {
+        users: (_, _, { req, res }) => {
             return users;
         },
         user: (_, { userId }) => {
