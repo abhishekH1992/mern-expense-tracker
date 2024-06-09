@@ -1,6 +1,6 @@
-import mangoose from 'mangooes'
+import mongoose from 'mongoose'
 
-const userSchema = new mangoose.Schema({
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -24,6 +24,6 @@ const userSchema = new mangoose.Schema({
     }
 }, { timestamp: true });
 
-const User = mangoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema)
 
 export default User

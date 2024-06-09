@@ -30,18 +30,20 @@ const store = new MongoDBStore({
     uri: process.env.MONGO_URI,
     collection: 'session'
 });
-store.on(error, (err) => console.log(err));
+store.on('error', (err) => console.log(err));
 
-app.use({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitilized: false,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        httpOnly: true
-    },
-    store: store
-})
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            httpOnly: true
+        },
+        store: store
+    })
+)
 
 app.use(passport.initialize());
 app.use(passport.session())
@@ -55,7 +57,7 @@ const server = new ApolloServer({
 await server.start();
 
 app.use(
-    '/',
+    '/graphql',
     cors({
         origin: 'http://localhost:3000',
         credentials: true
