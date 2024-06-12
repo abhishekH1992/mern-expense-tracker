@@ -5,9 +5,8 @@ const transactionResolver = {
         transactions: async(_, __, context) => {
             try {
                 if (!context.getUser()) throw new Error('Unauthorizedc')
-                const user = await context.getUser()._id
-
-                const transactions = await Transaction.find({ userId })
+                const userId = await context.getUser()._id
+                const transactions = await Transaction.find({ 'userId': userId })
                 return transactions
             } catch (err) {
                 console.log('Error in transactions query', err)
@@ -16,7 +15,8 @@ const transactionResolver = {
         },
         transaction: async(_, {transactionId}) => {
             try {
-                const transaction = Transaction.getTransactionById({transactionId})
+                const transaction = Transaction.findById(transactionId)
+                console.log(transaction)
                 return transaction
             } catch (err) {
                 console.log('Error in transaction query', err)
@@ -50,7 +50,7 @@ const transactionResolver = {
         },
         deleteTransaction: async(_, {transactionId}) => {
             try {
-                const deleteTransaction = await Transaction.findByIdAndUpdate(transactionId)
+                const deleteTransaction = await Transaction.findByIdAndDelete(transactionId)
                 return deleteTransaction
             } catch (err) {
                 console.log('Error in deleteTransaction', err)
