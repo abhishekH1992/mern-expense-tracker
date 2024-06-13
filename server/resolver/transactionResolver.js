@@ -1,4 +1,5 @@
 import Transaction from './../models/transactionModel.js'
+import User from '../models/userModel.js'
 
 const transactionResolver = {
     Query: {
@@ -16,12 +17,27 @@ const transactionResolver = {
         transaction: async(_, {transactionId}) => {
             try {
                 const transaction = Transaction.findById(transactionId)
-                console.log(transaction)
                 return transaction
             } catch (err) {
                 console.log('Error in transaction query', err)
                 throw new Error(err.message || 'Internal Server Error')
             }
+        },
+        categoryStatistics: async(_, __, context) => {
+            if(!context.getUser()) throw new Error('Unauthorized')
+
+            const userId = context.getUser()
+            const transactions = await Transaction.find({userId})
+            const categoryMap = {}
+
+            transactions.forEach((transaction) => {
+                if(!categoryMap[transaction.category]) {
+                    categoryMap[transaction.category] = 0
+                }
+                categoryMap[transaction.category] += transaction.amount
+            })
+            
+            return Object.entries(categoryMap).map(([category, totalAmount]) => ({ category, totalAmount }))
         }
     },
     Mutation: {
@@ -55,6 +71,18 @@ const transactionResolver = {
             } catch (err) {
                 console.log('Error in deleteTransaction', err)
                 throw new Error(err.message || 'Internal Server Error')
+            }
+        }
+    },
+    Transaction: {
+        user: async(parent) => {
+            const userId = parent.userId
+            try {
+                const user = await User.findById(userId)
+                return user
+            } catch (err) {
+                console.log("Error getting transction.user:", err)
+                throw new Error("Error getting user")
             }
         }
     }

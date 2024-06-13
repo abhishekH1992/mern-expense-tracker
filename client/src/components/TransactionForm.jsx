@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 const TransactionForm = () => {
 	const [createTransaction, {loading}] = useMutation(CREATE_TRANSACTION, {
-		refetchQueries: ["GetAuthenticatedUser", "GetTransactions"]
+		refetchQueries: ["GetAuthenticatedUser", "GetTransactions", "GetTransactionStatistics"]
 	});
 	const handleSubmit = async (e) => {
 		e.preventDefault();

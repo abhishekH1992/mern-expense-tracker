@@ -2,10 +2,17 @@ import Card from "./Card";
 import { GET_USER_TRANSACTION } from "../graphql/queries/transaction.query";
 import { useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
+import { GET_AUTHENTICATED_USER, GET_USER_AND_TRANSACTIONS } from "../graphql/queries/user.query";
 
 const Cards = () => {
 	const {data, loading, err} = useQuery(GET_USER_TRANSACTION);
-
+	const {data: authUser} = useQuery(GET_AUTHENTICATED_USER);
+	const {data: userAndTransaction} = useQuery(GET_USER_AND_TRANSACTIONS, {
+		variables: {
+			userId: authUser?.authUser?._id
+		}
+	});
+	console.log("userAndTransaction: ", userAndTransaction);
 	if(err) return toast.error(err.message);
 	if(loading) return <p>Loading...</p>
 	return (
@@ -13,7 +20,7 @@ const Cards = () => {
 			<p className='text-5xl font-bold text-center my-10'>History</p>
 			<div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-start mb-20'>
 				{!loading && data.transactions.map((transaction) => (
-					<Card key={transaction._id} transaction={transaction} />
+					<Card key={transaction._id} transaction={transaction} authUser={authUser.authUser}/>
 				)) }
 			</div>
 			{!loading && data?.transactions?.length === 0 && (
